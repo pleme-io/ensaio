@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = ["ensaio-lib", "ensaio-mcp", "utsuroi-lifecycle"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+strip = true

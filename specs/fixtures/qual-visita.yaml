@@ -1,0 +1,33 @@
+targets:
+  lab:
+    context: lab-dev
+    tier: development
+    namespace: default
+    carve:
+      allow: [carve-namespace, fence, carve-node, argocd-pause]
+      requiresWindow: false
+  lab-locked:
+    context: lab-locked
+    tier: production
+    carve:
+      allow: [carve-namespace]
+      requiresWindow: true
+      windowTag: lab-locked
+  ci:
+    context: ci-ctx
+    tier: development
+    namespace: default
+    carve:
+      allow: [carve-namespace, apply-manifest, dispatch-workflow, delete-runner-pod]
+      requiresWindow: false
+  ci-no-delete:
+    context: ci-ctx-dispatch-only
+    tier: development
+    namespace: default
+    carve:
+      allow: [dispatch-workflow]
+      requiresWindow: false
+lease:
+  ttl: 10m
+kubectl:
+  clientValidation: false

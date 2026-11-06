@@ -1,0 +1,36 @@
+[package]
+name = "utsuroi-lifecycle"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89.0"
+description = "Utsuroi (移ろい, 'the passing / transition through states') — the shared ephemeral-resource lifecycle spine. A LifecycleStage projection every domain phase FSM maps onto, the relocated StepOutcome/ControllerError controller vocabulary, kenshi's TeardownPolicy lifted, a parse-rejecting Ttl, and a passive Lease + Boundedness/ReapMechanism border. M0: the spine, mock-green — no phantom-typestate sealing, no controllers."
+homepage = "https://github.com/pleme-io/ensaio"
+repository = "https://github.com/pleme-io/ensaio"
+license = "MIT"
+authors = ["pleme-io"]
+
+[lib]
+name = "utsuroi_lifecycle"
+path = "src/lib.rs"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+humantime = { version = "2" }
+thiserror = { version = "2" }
+# The one non-pure dependency. `ControllerError` is relocated VERBATIM from
+# ensaio's `crate::controller` (both ensaio and viveiro rely on its
+# `Kube(#[from] kube::Error)` variant via `?` on `patch_status`); relocating it
+# faithfully — zero live-consumer body edits — pulls `kube` for that one type.
+# An infra dep, not a DOMAIN dep: no viveiro service conf, no ensaio assertion
+# catalog, no kenshi product spec. Every LIFECYCLE type in this crate
+# (LifecycleStage, DomainPhase, Ttl, Lease, TeardownPolicy, Boundedness,
+# ReapMechanism, StepOutcome) is kube-free.
+kube = { version = "0.99", default-features = false }
+
+[dev-dependencies]
+serde_json = { version = "1" }

@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qualify-od-runner-scale-set
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ci
+  source:
+    repoURL: git@github.com:example-org/example-config.git
+    targetRevision: pool-branch
+    path: charts/runner-scale-set
+    helm:
+      releaseName: qualify-od-runner-scale-set
+      valueFiles:
+        - ../../values/global.yaml
+        - ../../values/on-demand.yaml
+      parameters:
+        - name: runner-scale-set.runnerScaleSetName
+          value: qualify-od
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: qualify-runners
+  syncPolicy:
+    automated:
+      prune: true
+    managedNamespaceMetadata:
+      labels:
+        arc: "true"
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,93 @@
+# Seed for `specs/qual-envtrial.visita.lisp`: a stand-in for a borrowed staging
+# namespace. Applied by the test harness (never by `ensaio visita`, which has no
+# create verb), and deleted object-by-object before the namespace afterwards.
+#
+# The stand-in cluster Secret is NOT in this file (no unencrypted Secret enters
+# the tree); the harness creates it after applying this one:
+#   kubectl --context C -n qual-envtrial create secret generic trial-cluster --from-literal=config=NOT-A-REAL-TOKEN
+#   kubectl --context C -n qual-envtrial label secret trial-cluster project=trial-staging
+#   kubectl --context C -n qual-envtrial annotate secret trial-cluster crossplane=keep-me
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qual-envtrial
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trial-app-conf
+  namespace: qual-envtrial
+data:
+  pool_size: "4"
+  metrics_port: "9090"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trial-app
+  namespace: qual-envtrial
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: trial-app
+  template:
+    metadata:
+      labels:
+        app: trial-app
+    spec:
+      containers:
+        - name: app
+          image: registry.invalid/trial-app:natural
+          env:
+            - name: POOL_SIZE
+              value: "4"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: trial-app-hpa
+  namespace: qual-envtrial
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: trial-app
+  minReplicas: 2
+  maxReplicas: 28
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+# The load target for specs/qual-envtrial-load*.visita.lisp: declares an
+# in-place cpu resize without restart, and its image never pulls — so it is
+# never Ready and the kubelet never reports resources. Exactly the pod the
+# resize must refuse to call converged, and the guard must trip on.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: load-target
+  namespace: qual-envtrial
+  labels:
+    app: load-target
+spec:
+  containers:
+    - name: broker
+      image: registry.invalid/load-target:never
+      resizePolicy:
+        - resourceName: cpu
+          restartPolicy: NotRequired
+      resources:
+        limits:
+          cpu: "2"
+        requests:
+          cpu: 300m

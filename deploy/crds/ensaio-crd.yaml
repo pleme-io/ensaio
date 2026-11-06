@@ -1,0 +1,627 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: ensaios.ensaio.pleme.io
+spec:
+  group: ensaio.pleme.io
+  names:
+    categories: []
+    kind: Ensaio
+    plural: ensaios
+    shortNames:
+    - ens
+    singular: ensaio
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.phase
+      name: Phase
+      type: string
+    - jsonPath: .spec.claim
+      name: Claim
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for EnsaioCrdSpec via `CustomResource`
+        properties:
+          spec:
+            description: The `Ensaio` custom resource's spec — the K8s-facing counterpart of [`EnsaioSpec`] (the lisp-facing typed border). Convert with [`EnsaioCrdSpec::from_spec`].
+            properties:
+              assertions:
+                items:
+                  description: Parameters read only by the operator-side kinds ([`AssertionKind::RolloutSurgeBound`], [`AssertionKind::LogWindow`], [`AssertionKind::MetricInRange`], [`AssertionKind::HpaBehavior`]). They run from the operator's machine through the target's own API; each field is ignored by every kind that does not name it, the same convention as `header_name` and `marker`.
+                  properties:
+                    apiVersion:
+                      nullable: true
+                      type: string
+                    args:
+                      description: Container `args`, appended **after** `command` on the probe's main container (mirrors a Pod container's `command` + `args` split). The absorbed-test shape (an absorbed-test Job manifest) splits the test binary (`command`) from its flags (`args`); this field lets an [`AssertionKind::AmqpRoundtrip`] or `CustomJob` do the same. Ignored by non-Job kinds.
+                      items:
+                        type: string
+                      nullable: true
+                      type: array
+                    command:
+                      items:
+                        type: string
+                      nullable: true
+                      type: array
+                    container:
+                      description: '`ExecMetric`: the container the command runs in.'
+                      nullable: true
+                      type: string
+                    context:
+                      description: 'Kube context the assertion reads. Required by every operator-side kind: there is no ambient default.'
+                      nullable: true
+                      type: string
+                    env:
+                      description: 'Extra environment variables injected into a `CustomJob` probe pod, appended **after** the Downward-API `NODE_NAME` var (`k8s_env.rs`). This is the sanctioned channel for a probe credential: a `secret_key_ref` entry keeps the secret out of `command` (which is committed to git) and out of the probe image — the zero-plaintext discipline. Ignored by non-`CustomJob` kinds. Tier-honest: this makes the *preferred* path exist; an author can still bake a literal secret into `command`, so the no-inline-credential rule is a lint (CI-caught), **only-mitigated**, not truly-unrepresentable.'
+                      items:
+                        description: One environment variable injected into a `CustomJob` probe pod. Carries **either** a literal `value` **or** a `secret_key_ref` (a K8s `secretKeyRef`) — a credential MUST arrive via `secret_key_ref` so it never enters `command`/git/the image.
+                        properties:
+                          name:
+                            type: string
+                          secretKeyRef:
+                            description: A reference to one key of a K8s `Secret` — mirrors `core/v1 EnvVarSource.secretKeyRef` exactly (a roundtrip probe's proven shape).
+                            nullable: true
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                          value:
+                            nullable: true
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      nullable: true
+                      type: array
+                    expect:
+                      items:
+                        properties:
+                          absent:
+                            x-kubernetes-preserve-unknown-fields: true
+                          equals:
+                            x-kubernetes-preserve-unknown-fields: true
+                          max:
+                            format: double
+                            nullable: true
+                            type: number
+                          min:
+                            format: double
+                            nullable: true
+                            type: number
+                          oneOf:
+                            items:
+                              x-kubernetes-preserve-unknown-fields: true
+                            type: array
+                          path:
+                            type: string
+                          present:
+                            x-kubernetes-preserve-unknown-fields: true
+                        required:
+                        - path
+                        type: object
+                      nullable: true
+                      type: array
+                    expectImage:
+                      description: Image tag prefix of the build under test. `RolloutSurgeBound` waits for, and judges only, generations on it; `LogWindow` and `MetricInRange` read only pods running it. Without it, an observation made before the pipeline deploys judges the old build.
+                      nullable: true
+                      type: string
+                    from:
+                      nullable: true
+                      type: string
+                    headerName:
+                      nullable: true
+                      type: string
+                    id:
+                      type: string
+                    image:
+                      nullable: true
+                      type: string
+                    interval:
+                      description: Humantime sampling interval (`RolloutSurgeBound`, default 2s).
+                      nullable: true
+                      type: string
+                    jobs:
+                      items:
+                        properties:
+                          annotationContains:
+                            items:
+                              type: string
+                            nullable: true
+                            type: array
+                          conclusion:
+                            nullable: true
+                            type: string
+                          job:
+                            type: string
+                          logContains:
+                            items:
+                              type: string
+                            nullable: true
+                            type: array
+                        required:
+                        - job
+                        type: object
+                      nullable: true
+                      type: array
+                    kind:
+                      description: Closed set of assertion kinds.  Each variant is one interpreter arm (`crate::interp::apply`) and one CATALOG REFLECTION row — growth is a new variant + arm, never a branch inside an existing one.
+                      enum:
+                      - EphemeralStorageOnly
+                      - EnvironmentHealth
+                      - AuthserviceAdmission
+                      - TlsTerminationPassthrough
+                      - HeaderSurvives
+                      - NetworkPath
+                      - CustomJob
+                      - AmqpRoundtrip
+                      - PitrDataRoundtrip
+                      - RolloutSurgeBound
+                      - LogWindow
+                      - MetricInRange
+                      - HpaBehavior
+                      - ExecMetric
+                      - ObjectFields
+                      - WorkflowJobs
+                      - StepsCompleted
+                      - GuardHeld
+                      - NaturalStateRestored
+                      type: string
+                    marker:
+                      description: The marker a [`AssertionKind::PitrDataRoundtrip`] verifies. Required by that kind and ignored by every other, mirroring how `header_name` serves only `HeaderSurvives`.
+                      nullable: true
+                      properties:
+                        correlationId:
+                          description: The correlation id the seed wrote. Ties the row to THIS drill, so the assertion cannot pass on a marker some earlier drill left behind — which is the difference between proving a restore and proving a table exists.
+                          type: string
+                        database:
+                          default: pitr_drill
+                          description: Database holding the marker table. Defaults to the seed's own dedicated `pitr_drill`, which is deliberately not an application schema.
+                          type: string
+                        passwordKey:
+                          default: root-password
+                          type: string
+                        passwordSecret:
+                          description: Secret in the probe's namespace holding the password, and its key.
+                          type: string
+                        table:
+                          default: marker
+                          description: Marker table name.
+                          type: string
+                        user:
+                          default: root
+                          description: MySQL user for the read-back. The restored server carries the SOURCE's accounts, because a restore is the source's bytes — so this is the source's user, not one created afterwards.
+                          type: string
+                      required:
+                      - correlationId
+                      - passwordSecret
+                      type: object
+                    matchAny:
+                      description: '`LogWindow` with `presence present`: `true` holds when ANY pattern reaches `min_count` (the failure showed up in one of its forms); default `false` requires every pattern to.'
+                      nullable: true
+                      type: boolean
+                    max:
+                      format: double
+                      nullable: true
+                      type: number
+                    maxSurge:
+                      format: int64
+                      nullable: true
+                      type: integer
+                    maxUnavailable:
+                      format: int64
+                      nullable: true
+                      type: integer
+                    metric:
+                      nullable: true
+                      type: string
+                    min:
+                      format: double
+                      nullable: true
+                      type: number
+                    minCount:
+                      description: '`LogWindow` with `presence present`: each pattern must match at least this many lines (default 1). How an A/B''s side A proves it reproduced the failure.'
+                      format: uint64
+                      minimum: 0.0
+                      nullable: true
+                      type: integer
+                    mustNotTraverse:
+                      items:
+                        type: string
+                      nullable: true
+                      type: array
+                    name:
+                      nullable: true
+                      type: string
+                    names:
+                      description: Deployment / HPA names (`RolloutSurgeBound`, `HpaBehavior`).
+                      items:
+                        type: string
+                      nullable: true
+                      type: array
+                    path:
+                      description: Metrics path, default `/metrics` (`MetricInRange`).
+                      nullable: true
+                      type: string
+                    patterns:
+                      description: Literal substrings (`LogWindow`).
+                      items:
+                        type: string
+                      nullable: true
+                      type: array
+                    pod:
+                      description: '`ExecMetric`: the pod the command runs in.'
+                      nullable: true
+                      type: string
+                    port:
+                      description: Container port serving metrics — the service's own conf port, which is not always the `prometheus.io/port` annotation (`MetricInRange`).
+                      format: uint16
+                      minimum: 0.0
+                      nullable: true
+                      type: integer
+                    presence:
+                      description: '`absent` (default) or `present` (`LogWindow`).'
+                      enum:
+                      - absent
+                      - present
+                      nullable: true
+                      type: string
+                    probeNamespace:
+                      description: Namespace the `CustomJob` probe Job is created in. `None` (the default) uses the rig's own namespace. Set it to the *target environment's* namespace so the probe (a) can reach that env's `<svc>.<ns>.svc.cluster.local` names and (b) sits inside that namespace's own network policy, sidestepping a cross-namespace default-deny `NetworkPolicy` (same-namespace traffic is allowed). Ignored by non-`CustomJob` kinds.
+                      nullable: true
+                      type: string
+                    proofChannel:
+                      nullable: true
+                      type: string
+                    recordFrom:
+                      description: '`RolloutSurgeBound`: start recording when THIS fixture begins placement (the pin, the dispatch), not when the observe step runs. A pipeline''s deploy step waits for health, so an observe that starts after it sees only the finished generation — and a bound judged over no transition proves nothing.'
+                      nullable: true
+                      type: string
+                    resourceKind:
+                      nullable: true
+                      type: string
+                    runOf:
+                      nullable: true
+                      type: string
+                    scaleUp:
+                      description: The `behavior.scaleUp` policy every named HPA must carry (`HpaBehavior`).
+                      nullable: true
+                      properties:
+                        kind:
+                          description: '`Pods` or `Percent`.'
+                          type: string
+                        periodSeconds:
+                          format: int64
+                          type: integer
+                        value:
+                          format: int64
+                          type: integer
+                      required:
+                      - kind
+                      - periodSeconds
+                      - value
+                      type: object
+                    selector:
+                      description: Pod label selector (`LogWindow`, `MetricInRange`).
+                      nullable: true
+                      type: string
+                    session:
+                      nullable: true
+                      type: string
+                    sidecar:
+                      description: 'A KEP-753 native-sidecar container for a two-container probe Job — the shape a single-container `CustomJob` structurally cannot express (see an absorbed-test Job manifest''s header). Rendered as an `initContainer` with `restartPolicy: Always`, started first and kept running for the probe''s whole lifetime, gating the main container''s start on the sidecar''s `startupProbe`. This is what makes the muda **absorbed-test** client-plane roundtrip (a socat loopback relay alongside the unmodified upstream AMQP test binary) expressible as a typed [`AssertionKind::AmqpRoundtrip`]. Ignored by every kind except `AmqpRoundtrip`/`CustomJob`.'
+                      nullable: true
+                      properties:
+                        args:
+                          description: The sidecar's `args`, appended after `command`.
+                          items:
+                            type: string
+                          nullable: true
+                          type: array
+                        command:
+                          description: The sidecar's `command` (entrypoint). `None` uses the image default.
+                          items:
+                            type: string
+                          nullable: true
+                          type: array
+                        image:
+                          description: The sidecar container image (e.g. the socat relay).
+                          type: string
+                        name:
+                          description: The sidecar container's name. Defaults to `"relay"` when unset.
+                          nullable: true
+                          type: string
+                        startupProbeCommand:
+                          description: 'The `exec` `startupProbe` command that gates the MAIN container''s start on this sidecar being ready. **`exec`, never `tcpSocket`** — a `tcpSocket`/`httpGet` probe''s `host: 127.0.0.1` resolves from kubelet''s own context (the node''s loopback), never the pod''s, so it can never confirm a socket bound to the pod-local `127.0.0.1` (the real bug the absorbed-test YAML''s own comment documents). `None` renders no `startupProbe`.'
+                          items:
+                            type: string
+                          nullable: true
+                          type: array
+                      required:
+                      - image
+                      type: object
+                    stat:
+                      description: '`ExecMetric`: which statistic is judged (default `all`).'
+                      enum:
+                      - all
+                      - max
+                      - min
+                      nullable: true
+                      type: string
+                    target:
+                      type: string
+                    targetNamespace:
+                      description: |-
+                        The namespace this assertion inspects, when it is not the rig's own.
+
+                        **Why this exists.** Every assertion before `EphemeralStorageOnly` probed a *system Ensaio stood up*, so the rig's namespace was always the right place to look. A qualification asks a different question — "is THAT environment sound?" — and the environment lives in its own `viveiro-env-<hash>` namespace. Without this field the check ran against the rig and would have reported on the wrong namespace: not an error, a confident answer about something nobody asked about, which is worse.
+
+                        `None` keeps the historical behaviour (the rig's namespace), so every existing assertion is unchanged.
+                      nullable: true
+                      type: string
+                    timeout:
+                      nullable: true
+                      type: string
+                    waitUntil:
+                      items:
+                        properties:
+                          absent:
+                            x-kubernetes-preserve-unknown-fields: true
+                          equals:
+                            x-kubernetes-preserve-unknown-fields: true
+                          max:
+                            format: double
+                            nullable: true
+                            type: number
+                          min:
+                            format: double
+                            nullable: true
+                            type: number
+                          oneOf:
+                            items:
+                              x-kubernetes-preserve-unknown-fields: true
+                            type: array
+                          path:
+                            type: string
+                          present:
+                            x-kubernetes-preserve-unknown-fields: true
+                        required:
+                        - path
+                        type: object
+                      nullable: true
+                      type: array
+                    window:
+                      description: 'Humantime window: the rollout watch budget, or the log look-back.'
+                      nullable: true
+                      type: string
+                  required:
+                  - id
+                  - kind
+                  - target
+                  type: object
+                type: array
+              claim:
+                type: string
+              confirmAfterRuns:
+                default: 1
+                description: 'The stability gate (borrowed from breathe''s `confirmAfterSeconds` pattern): re-run the assertion catalog this many times, all agreeing, before the controller commits to a final verdict.'
+                format: uint32
+                minimum: 0.0
+                type: integer
+              confluenceRef:
+                nullable: true
+                type: string
+              record:
+                default: false
+                type: boolean
+              scope:
+                description: Must equal the controller's `ENSAIO_SCOPE` — the same scope gate Autorevivy uses. Enforced at runtime (the controller ignores any other value) and by RBAC (the controller's `ClusterRole` grants write only inside the deployment's own namespaces).
+                type: string
+              systems:
+                items:
+                  description: One ephemeral system Ensaio stands up for the run's duration.
+                  properties:
+                    breathe:
+                      default: false
+                      type: boolean
+                    id:
+                      type: string
+                    template:
+                      type: string
+                  required:
+                  - id
+                  - template
+                  type: object
+                type: array
+              ttl:
+                type: string
+              wiring:
+                default: []
+                items:
+                  description: A wiring edge letting two systems reach each other for the run.
+                  properties:
+                    from:
+                      type: string
+                    to:
+                      type: string
+                    via:
+                      type: string
+                  required:
+                  - from
+                  - to
+                  - via
+                  type: object
+                type: array
+            required:
+            - assertions
+            - claim
+            - scope
+            - systems
+            - ttl
+            type: object
+          status:
+            description: The `Ensaio` custom resource's status — the kubectl-queryable verdict surface (`kubectl get ensaio -o jsonpath='{.status.phase}'`).
+            nullable: true
+            properties:
+              confirmations:
+                default: 0
+                description: How many consecutive assertion passes have completed toward `spec.confirm_after_runs`.
+                format: uint32
+                minimum: 0.0
+                type: integer
+              message:
+                nullable: true
+                type: string
+              phase:
+                default: Pending
+                description: The lifecycle FSM. Converges toward a **terminal** phase (`Done`/`Failed`/`TTLExceeded`) — never an indefinite tick, the structural difference from a Viggy `(defpromessa)` steady-state promise (`theory/ENSAIO.md` §5).
+                enum:
+                - Pending
+                - Provisioning
+                - Ready
+                - Wiring
+                - Asserting
+                - Done
+                - Failed
+                - TtlExceeded
+                - Settled
+                - Dormant
+                - Retired
+                type: string
+              results:
+                default: []
+                items:
+                  description: One assertion's recorded result.
+                  properties:
+                    assertion_id:
+                      type: string
+                    kind:
+                      description: Closed set of assertion kinds.  Each variant is one interpreter arm (`crate::interp::apply`) and one CATALOG REFLECTION row — growth is a new variant + arm, never a branch inside an existing one.
+                      enum:
+                      - EphemeralStorageOnly
+                      - EnvironmentHealth
+                      - AuthserviceAdmission
+                      - TlsTerminationPassthrough
+                      - HeaderSurvives
+                      - NetworkPath
+                      - CustomJob
+                      - AmqpRoundtrip
+                      - PitrDataRoundtrip
+                      - RolloutSurgeBound
+                      - LogWindow
+                      - MetricInRange
+                      - HpaBehavior
+                      - ExecMetric
+                      - ObjectFields
+                      - WorkflowJobs
+                      - StepsCompleted
+                      - GuardHeld
+                      - NaturalStateRestored
+                      type: string
+                    verdict:
+                      description: |-
+                        What one assertion is entitled to say about the subject set it examined.
+
+                        `Held` requires a non-empty witness of what was examined; `Vacuous` (examined nothing) and `Unreached` (never ran) are distinct arms and are never a pass. Derived only by [`Verdict::judge`]. See the implementation notes above this type for the full rationale (`theory/UNREPRESENTABILITY.md` §II.4).
+                      oneOf:
+                      - required:
+                        - Held
+                      - required:
+                        - Falsified
+                      - required:
+                        - Errored
+                      - required:
+                        - Skipped
+                      - required:
+                        - Vacuous
+                      - required:
+                        - Unreached
+                      properties:
+                        Errored:
+                          description: The rig itself broke — the probe could not be run to a conclusion. Makes no claim about the architecture.
+                          properties:
+                            message:
+                              type: string
+                          required:
+                          - message
+                          type: object
+                        Falsified:
+                          description: The claim fails over a non-empty examined subject set, with at least one finding. A falsified verdict with zero findings would be a held verdict wearing the wrong tag, so `findings` is non-empty by the same construction as `subjects`.
+                          properties:
+                            findings:
+                              items:
+                                type: string
+                              minItems: 1
+                              type: array
+                            subjects:
+                              items:
+                                type: string
+                              minItems: 1
+                              type: array
+                          required:
+                          - findings
+                          - subjects
+                          type: object
+                        Held:
+                          description: |-
+                            The claim holds over a **non-empty** examined subject set.
+
+                            `subjects` is the witness. It is not a count, and not a count that happens to be non-zero: it is the examined values themselves.
+                          properties:
+                            subjects:
+                              items:
+                                type: string
+                              minItems: 1
+                              type: array
+                          required:
+                          - subjects
+                          type: object
+                        Skipped:
+                          description: 'The claim was neither proven nor disproven — a precondition it depends on (e.g. the broker''s mgmt API being reachable) was unmet, so the substrate wasn''t fit to test it. Distinct from `Falsified` (real, witnessed evidence *against* the claim): a `Skipped` assertion never contributes a falsification to a certificate — it routes to `Inconclusive`, the honest verdict when the environment couldn''t answer the question.'
+                          properties:
+                            reason:
+                              type: string
+                          required:
+                          - reason
+                          type: object
+                        Unreached:
+                          description: |-
+                            The assertion **never ran**. No claim of any kind is available.
+
+                            The honest [`Default`], so a verdict field that was never assigned reads as "no claim" rather than as a pass.
+                          type: object
+                        Vacuous:
+                          description: The assertion ran and **nothing was in scope**. Not a pass, not a falsification — the distinct arm §II.4's clause 2 requires, and the answer to "the assertion held over forty subjects" and "the assertion held over zero" having been the same value.
+                          type: object
+                      type: object
+                  required:
+                  - assertion_id
+                  - kind
+                  - verdict
+                  type: object
+                type: array
+              systemsProvisioned:
+                default: []
+                items:
+                  type: string
+                type: array
+            type: object
+        required:
+        - spec
+        title: Ensaio
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+

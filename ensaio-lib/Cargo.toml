@@ -1,0 +1,97 @@
+[package]
+name = "ensaio"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89.0"
+description = "Ensaio (Portuguese, trial/rehearsal/assay) — the typed architectural-trial primitive. Declares N ephemeral systems, wires them, runs a typed catalog of assertions via a (defensaio ...)/(defassert ...) tatara-lisp authoring surface over a Rust TataraDomain border, records a durable verdict, tears down."
+homepage = "https://github.com/pleme-io/ensaio"
+repository = "https://github.com/pleme-io/ensaio"
+license = "MIT"
+authors = ["pleme-io"]
+
+[lib]
+name = "ensaio"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ensaio"
+path = "src/main.rs"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+
+[features]
+mock = []
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+serde_yaml_ng = { version = "0.10" }
+thiserror = { version = "2" }
+anyhow = { version = "1" }
+async-trait = { version = "0.1" }
+clap = { version = "4", features = ["derive", "env"] }
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+tatara-lisp = { version = "0.3.3" }
+utsuroi-lifecycle = { path = "../utsuroi-lifecycle" }
+# `jsonpatch` is what makes release_environment a real compare-and-swap: the
+# apiserver evaluates a JSON Patch array atomically and rejects the whole thing
+# on a failed `test` op, so there is no window between checking who holds an
+# environment and clearing it. A merge patch cannot express that.
+kube = { version = "0.99", default-features = false, features = ["client", "rustls-tls", "runtime", "derive", "jsonpatch"] }
+# kube-core does not re-export json_patch, so the type `Patch::Json` wraps has
+# to be a direct dependency. Pinned to the same major kube-core resolves ("4"),
+# because a mismatch here is a type error at the call site, not a version warning.
+json-patch = "4"
+k8s-openapi = { version = "0.24", features = ["latest"] }
+# `default-features = false` is LOAD-BEARING, not tidiness. cargo features are
+# additive: asking for "rustls-tls" does not turn OFF reqwest's default
+# "default-tls", so the graph carried BOTH — hyper-tls -> native-tls ->
+# openssl-sys, alongside the rustls stack `kube` above is already pinned to.
+# On darwin native-tls is Security.framework and it costs nothing visible; on
+# x86_64-linux it is a DYNAMIC link against openssl, and the resulting test
+# binary looks for `libssl.so.3` at load time with no RUNPATH that resolves it.
+# Reproduced on an x86_64-linux builder (2026-08-13, x86_64-linux, inside `nix develop`):
+#   controller_reconcile_test-6f4786b25af8890d: error while loading shared
+#   libraries: libssl.so.3: cannot open shared object file
+# and the process exits 127 — which reads in the Actions UI as "command not
+# found" and sent the first diagnosis at a missing cargo. It is a built binary
+# failing to LOAD, not a missing tool.
+#
+# The fix is to delete the dependency rather than to teach the build where
+# libssl lives: a RUNPATH patch would leave a second TLS stack compiled into
+# every binary, and a repo that has already chosen rustls everywhere should not
+# ship openssl by accident.
+reqwest = { version = "0.12", default-features = false, features = [
+  "json",
+  "rustls-tls",
+  "charset",
+  "http2",
+] }
+schemars = { version = "0.8" }
+futures = { version = "0.3" }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+humantime = { version = "2" }
+blake3 = { version = "1" }
+# The in-place pod resize's pure decisions (resizePolicy restart check,
+# QoS-preserving block, subresource body, convergence), shared with breathe —
+# one home, so visita's reversible resize and breathe's actuators cannot drift.
+# Pinned to breathe's commit until crates.io carries it: breathe's
+# auto-release could not publish it (cargo set-version bumps the whole
+# workspace, the publisher skips unchanged members, so a new member depending
+# on an unchanged sibling waits for a version never published — owed fix in
+# pleme-io/actions cargo-publish-each-member). Switch to a version then.
+breathe-resize = { git = "https://github.com/pleme-io/breathe", rev = "a6fa645765c96f27836abaadb9a0231435c51c94" }
+
+shikumi = { version = "0.1.1082", features = ["cli"] }
+guardrail = "0.1.21"
+
+[dev-dependencies]
+ensaio = { path = ".", features = ["mock"] }
+tower = { version = "0.5", features = ["util"] }
+http-body-util = { version = "0.1" }
+http = { version = "1" }
+bytes = { version = "1" }

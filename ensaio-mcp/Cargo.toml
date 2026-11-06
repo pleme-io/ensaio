@@ -1,0 +1,45 @@
+[package]
+name = "ensaio-mcp"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89.0"
+description = "ensaio-mcp — the MCP surface for driving a running Ensaio typed-architectural-trial instance (list/get/apply/retire Ensaio CRs + the assertion-kind catalog), mirroring breathe-mcp's shape."
+homepage = "https://github.com/pleme-io/ensaio"
+repository = "https://github.com/pleme-io/ensaio"
+license = "MIT"
+authors = ["pleme-io"]
+
+[[bin]]
+name = "ensaio-mcp"
+path = "src/main.rs"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+
+[dependencies]
+ensaio = { path = "../ensaio-lib" }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+# kotae — the typed answer vocabulary. An agent reading this surface cannot
+# otherwise tell "no ensaios in that namespace" from "the list call failed":
+# the first used to render as a bare `[]` and the second as an object with an
+# `error` key, and neither said which of the four distinguishable outcomes it
+# was. kotae makes the discriminant part of the bytes.
+kotae = "0.1"
+anyhow = { version = "1" }
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+kube = { version = "0.99", default-features = false, features = ["client", "rustls-tls", "runtime", "derive"] }
+# ensaio-mcp is its own crate specifically so rmcp's schemars 1.x
+# requirement never has to coexist in the same dependency graph as
+# ensaio-lib's schemars 0.8 (crd.rs's CustomResource derive) — a
+# Cargo package-rename (`schemars1 = { package = "schemars", version
+# = "1" }`) does NOT work for this: schemars 1.x's derive macro emits
+# code with hardcoded absolute paths back to `::schemars::...`, which
+# resolve against the CALLING crate's own unaliased dependency, not
+# the rename alias. Separate crates, separate dependency graphs, no
+# conflict.
+rmcp = { version = "1.4", features = ["server", "transport-io"] }
+schemars = { version = "1" }
