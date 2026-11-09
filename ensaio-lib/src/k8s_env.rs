@@ -792,7 +792,7 @@ impl EnsaioEnvironment for K8sEnvironment {
 
                         // Every working volume must be a BOUNDED memory-backed
                         // emptyDir. Unbounded is not a pass: it trades ENOSPC
-                        // for an unattributable OOMKill (RAMDISK.md §VI).
+                        // for an unattributable OOMKill.
                         let mut inspected = 0usize;
                         match pods.list(&Default::default()).await {
                             Ok(list) => {

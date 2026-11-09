@@ -32,7 +32,7 @@
 //! FSM here (an illegal transition is still a runtime `match` in each domain,
 //! not an `E0599`); there is no controller, no pool, no `(deflifecycle)` lisp
 //! form, no witness-carrying `Terminal::{Accepted(ReapProof)|Rejected(_)}`
-//! sealed constructor. Those are the named-M1 destination — see `UTSUROI.md`.
+//! sealed constructor. Those are the named-M1 destination.
 //! The single M0 guarantee that IS earned at the type level is [`Ttl`]'s
 //! **parse-time rejection** of a zero/absent/unparseable ttl (a value the
 //! reap-firing itself remains a runtime world-fact — only-mitigated).

@@ -434,8 +434,8 @@ pub enum AssertionKind {
     ///
     /// **What it proves and what it does not.** It proves nothing durable
     /// *can* survive the namespace. It does NOT prove nothing *did* survive:
-    /// that needs the spawn → mutate → respawn → gone sequence
-    /// (`EPHEMERAL-ENVIRONMENT-PLAN.md` Phase 2), which is a procedure across
+    /// that needs the spawn → mutate → respawn → gone sequence,
+    /// which is a procedure across
     /// two environment lifetimes and cannot be one assertion against one live
     /// namespace. Read a pass as "no drive exists here", never as "no state
     /// survived".

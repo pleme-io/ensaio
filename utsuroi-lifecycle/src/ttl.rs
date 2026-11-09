@@ -11,8 +11,7 @@
 //! `ttl: 0` must be **rejected at the parse boundary** (parse-don't-validate,
 //! `Err`), never silently clamped to some minimum and reaped-at-min. Clamp and
 //! reject are different algebras; `Ttl` is a purpose-built parse-rejecting
-//! newtype, not a fourth copy of the clamp primitive. (Recorded as the seventh
-//! design correction in `UTSUROI.md`.)
+//! newtype, not a fourth copy of the clamp primitive.
 //!
 //! # Honest tier
 //!
