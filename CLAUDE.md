@@ -12,5 +12,3 @@ deployment's own overlay repo, which depends on this one by git.
   `catalog_reflection` fails when it drifts.
 - Every name in this tree is generic. Never commit a deployment's cluster,
   tenant or vendor name here.
-
-Canonical design doc: `theory/ENSAIO.md` in the pleme-io org.

@@ -484,7 +484,7 @@ spec:
                 type: string
               phase:
                 default: Pending
-                description: The lifecycle FSM. Converges toward a **terminal** phase (`Done`/`Failed`/`TTLExceeded`) — never an indefinite tick, the structural difference from a Viggy `(defpromessa)` steady-state promise (`theory/ENSAIO.md` §5).
+                description: The lifecycle FSM. Converges toward a **terminal** phase (`Done`/`Failed`/`TTLExceeded`) — never an indefinite tick, the structural difference from a Viggy `(defpromessa)` steady-state promise.
                 enum:
                 - Pending
                 - Provisioning
@@ -532,7 +532,7 @@ spec:
                       description: |-
                         What one assertion is entitled to say about the subject set it examined.
 
-                        `Held` requires a non-empty witness of what was examined; `Vacuous` (examined nothing) and `Unreached` (never ran) are distinct arms and are never a pass. Derived only by [`Verdict::judge`]. See the implementation notes above this type for the full rationale (`theory/UNREPRESENTABILITY.md` §II.4).
+                        `Held` requires a non-empty witness of what was examined; `Vacuous` (examined nothing) and `Unreached` (never ran) are distinct arms and are never a pass. Derived only by [`Verdict::judge`]. See the implementation notes above this type for the full rationale.
                       oneOf:
                       - required:
                         - Held

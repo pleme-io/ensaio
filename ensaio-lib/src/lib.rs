@@ -14,8 +14,6 @@
 //! `Controller` converging `status.phase` toward a terminal state,
 //! and [`k8s_env::K8sEnvironment`] — a real, honestly-bounded
 //! [`EnsaioEnvironment`] backing it.
-//!
-//! Canonical doc: `theory/ENSAIO.md` in the pleme-io org.
 
 pub mod cli;
 pub mod controller;
@@ -30,8 +28,7 @@ pub mod loader;
 pub mod mock;
 /// The reactive-nervous-system extension point — [`nervous::PhaseEvent`],
 /// published once per `Ensaio` phase transition via
-/// [`interp::EnsaioEnvironment::publish_phase_event`]. See
-/// `theory/ENSAIO.md` §7.2.
+/// [`interp::EnsaioEnvironment::publish_phase_event`].
 pub mod nervous;
 /// The PROVE-axis attestation object — [`receipt::CertificationReceipt`],
 /// a typed, content-addressed projection over an [`EnsaioOutcome`]'s

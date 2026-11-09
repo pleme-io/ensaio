@@ -99,7 +99,7 @@ pub struct EnsaioStatus {
 /// The lifecycle FSM. Converges toward a **terminal** phase
 /// (`Done`/`Failed`/`TTLExceeded`) — never an indefinite tick, the
 /// structural difference from a Viggy `(defpromessa)` steady-state
-/// promise (`theory/ENSAIO.md` §5).
+/// promise.
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, JsonSchema, Default, PartialEq, Eq)]
 pub enum EnsaioPhase {
     #[default]

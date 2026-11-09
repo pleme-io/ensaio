@@ -10,7 +10,7 @@
 //! the target cluster's own default-deny posture exposed this session.
 //!
 //! **Teardown is scale-to-zero, never delete** — the operator
-//! correction folded into `theory/ENSAIO.md` §5: a provisioned
+//! correction: a provisioned
 //! system's "off" state is `replicas: 0` (cost-free, instantly
 //! wakeable), not an absent, deleted resource. Wiring this to a real
 //! breathe `ReplicaBand` floor (rather than a direct Deployment patch)
@@ -260,7 +260,7 @@ impl K8sEnvironment {
     /// pod's logs as evidence, then delete the Job.
     ///
     /// This is deliberately NOT the scale-to-zero teardown rule
-    /// (`theory/ENSAIO.md` §5, `teardown_system` above) — that rule
+    /// (`teardown_system` above) — that rule
     /// governs a `SystemSpec`-declared system's lifecycle across a
     /// whole Ensaio run (it has an ongoing identity worth preserving
     /// dormant). A probe Job is a one-shot process with no identity
@@ -332,7 +332,7 @@ impl K8sEnvironment {
         let _ = jobs.delete(&job_name, &DeleteParams::default()).await;
 
         // The verdict is DERIVED from the subject set the probe actually
-        // examined, and carries it (`theory/UNREPRESENTABILITY.md` §II.4).
+        // examined, and carries it.
         // The subjects are the job's own terminal status plus every line
         // the probe pod logged — one observation each, so a reader can see
         // both *what* was concluded and *how much* it was concluded from.
@@ -1010,8 +1010,8 @@ impl EnsaioEnvironment for K8sEnvironment {
         })
     }
 
-    /// **Honest stub — not the real implementation.** `theory/ENSAIO.md`
-    /// §7.2 names the reactive-nervous-system publish as a real M5+
+    /// **Honest stub — not the real implementation.** The
+    /// reactive-nervous-system publish is a real M5+
     /// candidate; wiring an actual `escuta`/NATS client here (a new
     /// `async-nats` dependency, connection lifecycle management threaded
     /// through `K8sEnvironment::new`, and reconnect/backoff handling) is

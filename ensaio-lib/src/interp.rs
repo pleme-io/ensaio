@@ -30,8 +30,7 @@ pub trait EnsaioEnvironment {
     /// Apply a wiring edge between two provisioned systems.
     fn wire(&self, w: &WiringSpec) -> Result<(), String>;
 
-    /// Place one per-experiment fixture — the layer ensaio owns
-    /// (`theory/EPHEMERAL-STATE-INSTANTIATION.md`).
+    /// Place one per-experiment fixture — the layer ensaio owns.
     ///
     /// Called between wiring and assertions, in [`placement_order`]. No default
     /// impl, for the same reason [`Self::publish_phase_event`] has none: an
@@ -51,8 +50,7 @@ pub trait EnsaioEnvironment {
     fn run_assertion(&self, a: &AssertionSpec) -> Result<Verdict, String>;
 
     /// Record the run's outcome.  Default is a no-op — the M0/M1
-    /// interim has no durable attestation format yet (unverified,
-    /// see `theory/ENSAIO.md` §3).
+    /// interim has no durable attestation format yet (unverified).
     fn record(&self, _outcome: &EnsaioOutcome) -> Result<(), String> {
         Ok(())
     }
@@ -61,12 +59,11 @@ pub trait EnsaioEnvironment {
     /// system this deletes it. For a Helm/FluxCD-declared system (M2+)
     /// the destination is scale-to-zero (`Dormant`, a breathe
     /// `ReplicaBand` floor) — cost-free and instantly wakeable — never
-    /// an actual delete; see `theory/ENSAIO.md` §5, "Teardown is
-    /// scale-to-zero, not delete."
+    /// an actual delete: teardown is scale-to-zero, not delete.
     fn teardown_system(&self, endpoint: &str) -> Result<(), String>;
 
     /// Publish one typed phase-transition event onto the reactive
-    /// nervous system (escuta/NATS) — the `theory/ENSAIO.md` §7.2
+    /// nervous system (escuta/NATS) — the reactive-nervous-system
     /// extension point. Called once per `status.phase` commit by the M2
     /// controller (`controller::step_phase`). No default impl
     /// deliberately: every `EnsaioEnvironment` must decide explicitly

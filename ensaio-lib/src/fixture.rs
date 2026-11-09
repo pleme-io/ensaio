@@ -1,5 +1,5 @@
 //! Per-experiment data placement — the layer ensaio owns in the four-layer
-//! split (`theory/EPHEMERAL-STATE-INSTANTIATION.md`).
+//! split.
 //!
 //! **Base state is SYNCED; experiment data is PLACED.** Controllers drive the
 //! config, model and seed every environment must have, identically. A fixture

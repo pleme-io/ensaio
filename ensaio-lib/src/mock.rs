@@ -18,7 +18,7 @@ pub struct MockEnv {
     pub log: RefCell<Vec<String>>,
     /// Every [`PhaseEvent`] `publish_phase_event` received, in order —
     /// the direct assertion surface for the reactive-nervous-system
-    /// extension point (`theory/ENSAIO.md` §7.2), alongside the generic
+    /// extension point, alongside the generic
     /// `log`.
     pub phase_events: RefCell<Vec<PhaseEvent>>,
     pub fail_publish: bool,

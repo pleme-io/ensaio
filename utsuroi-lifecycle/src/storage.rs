@@ -4,7 +4,7 @@
 //! # Why the relation lives in the spine and the ramdisk does not
 //!
 //! RAMDISK is a property of a **permutation** (a *variedade*), never of the
-//! framework. `theory/RAMDISK.md` prescribes memory-backed storage for every
+//! framework. RAMDISK prescribes memory-backed storage for every
 //! ephemeral environment, and the framework's job is not to hold that choice —
 //! it is to hold the *rule that decides whether a given permutation's choice is
 //! legal for a given component*. So there is no storage field on any lifecycle
@@ -272,7 +272,7 @@ impl fmt::Display for IoProfile {
 /// naming the path.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Overflow {
-    /// The kernel kills the pod. `theory/RAMDISK.md` §VI: it presents as an
+    /// The kernel kills the pod. It presents as an
     /// unattributable OOM, not a full disk, which is why the bound matters.
     OomKill,
     /// A write fails with `ENOSPC` and the application sees it.
@@ -375,7 +375,7 @@ pub enum StorageError {
     MemoryCannotPersist { durability: Durability },
     /// A posture with no capacity bound. A tmpfs bills against the pod's memory
     /// limit, so an unbounded one turns a runaway write into an `OOMKill` that
-    /// names no cause (`theory/RAMDISK.md` §VI).
+    /// names no cause.
     #[error("a storage posture must declare a non-zero capacity bound")]
     UnboundedCapacity,
 }
@@ -865,7 +865,7 @@ mod tests {
     const GIB: u64 = 1024 * 1024 * 1024;
 
     /// The prescribed variedade posture every row below is judged against: a
-    /// 2 GiB ramdisk. `theory/RAMDISK.md`'s default, stated once.
+    /// 2 GiB ramdisk. RAMDISK's default, stated once.
     fn prescribed_ramdisk() -> StoragePosture {
         StoragePosture::ramdisk(2 * GIB).expect("a bounded ramdisk is a legal posture")
     }

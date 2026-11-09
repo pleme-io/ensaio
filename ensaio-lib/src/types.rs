@@ -426,7 +426,7 @@ pub enum AssertionKind {
     /// Is this environment **actually ephemeral** — does it hold no storage
     /// that could outlive it?
     ///
-    /// The typed form of `theory/RAMDISK.md` §IV: every volume in the target
+    /// The typed form of the RAMDISK rule: every volume in the target
     /// namespace is a *bounded, memory-backed* `emptyDir`, and no
     /// `PersistentVolumeClaim` exists at all. That is the precondition for the
     /// doctrine's real claim — that declaration is the only surviving source of
@@ -441,8 +441,7 @@ pub enum AssertionKind {
     /// survived".
     ///
     /// `target` is unused — the claim is about the namespace, not one workload,
-    /// which is the whole point of the namespace being the boundary
-    /// (`theory/DENY-ALL.md` §II).
+    /// which is the whole point of the namespace being the boundary.
     EphemeralStorageOnly,
     /// Is every workload in the target namespace **actually up** — every pod
     /// Ready, and none stuck in `CrashLoopBackOff` / `ImagePullBackOff` /
@@ -822,7 +821,7 @@ pub enum Domain<T> {
 //
 // # The law this type is
 //
-// `theory/UNREPRESENTABILITY.md` §II.4, the **derived-verdict law**:
+// The **derived-verdict law**:
 //
 // > A verdict is derived from the subject set it claims about, and
 // > carries the witness of that derivation.
@@ -926,8 +925,7 @@ pub enum Domain<T> {
 /// `Held` requires a non-empty witness of what was examined; `Vacuous`
 /// (examined nothing) and `Unreached` (never ran) are distinct arms and
 /// are never a pass. Derived only by [`Verdict::judge`]. See the
-/// implementation notes above this type for the full rationale
-/// (`theory/UNREPRESENTABILITY.md` §II.4).
+/// implementation notes above this type for the full rationale.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema)]
 #[serde(try_from = "VerdictWire")]
 pub enum Verdict {

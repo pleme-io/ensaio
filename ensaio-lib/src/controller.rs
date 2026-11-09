@@ -175,8 +175,7 @@ async fn reconcile(
 /// Advance `status` by exactly one phase-FSM step, dispatching every
 /// side effect (provision/wait-ready/wire/run-assertion/teardown)
 /// through `env` and firing exactly one typed [`PhaseEvent`] publish per
-/// transition committed (`theory/ENSAIO.md` §7.2 — the reactive-
-/// nervous-system extension point).
+/// transition committed (the reactive-nervous-system extension point).
 ///
 /// Generic over `E: EnsaioEnvironment` — no kube-rs/tokio dependency —
 /// so this is the unit-testable core of the M2 reconcile loop

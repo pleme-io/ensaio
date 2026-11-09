@@ -1,4 +1,4 @@
-//! The DERIVED-VERDICT law (`theory/UNREPRESENTABILITY.md` §II.4) applied to
+//! The DERIVED-VERDICT law applied to
 //! ensaio's own product: **the verdict**.
 //!
 //! > A verdict is derived from the subject set it claims about, and carries

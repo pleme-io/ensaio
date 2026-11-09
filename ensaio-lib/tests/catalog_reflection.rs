@@ -77,11 +77,10 @@ fn all_has_no_duplicates_and_the_canary_count_is_current() {
 
 #[test]
 fn every_kind_is_named_in_the_doc_catalog_table() {
-    // theory/ENSAIO.md §2 documents one row per AssertionKind. This
-    // can't reach across repos to verify the doc directly, but it
-    // pins the exact variant names + count the doc table must match —
-    // a human (or agent) updating the doc has this list to check
-    // against, and a variant rename here is a visible diff against it.
+    // One row per AssertionKind. This pins the exact variant names +
+    // count any catalog table must match — a human (or agent) updating
+    // such a table has this list to check against, and a variant rename
+    // here is a visible diff against it.
     let names: Vec<String> = AssertionKind::ALL
         .iter()
         .map(|k| format!("{k:?}"))

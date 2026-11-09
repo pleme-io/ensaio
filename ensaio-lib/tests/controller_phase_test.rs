@@ -4,7 +4,7 @@
 //! `controller_reconcile_test.rs`'s job).
 //!
 //! These tests exist specifically to prove the reactive-nervous-system
-//! extension point (`theory/ENSAIO.md` §7.2): a typed
+//! extension point: a typed
 //! [`ensaio::PhaseEvent`] publish, behind
 //! `EnsaioEnvironment::publish_phase_event`, fires exactly once per phase
 //! transition `step_phase` commits — the same rigor the crate already

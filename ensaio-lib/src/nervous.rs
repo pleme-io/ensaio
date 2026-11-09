@@ -1,4 +1,4 @@
-//! The reactive-nervous-system extension point (`theory/ENSAIO.md` §7.2):
+//! The reactive-nervous-system extension point:
 //! one typed publish call per `Ensaio` phase transition, so breathe/sarar/a
 //! dashboard can observe a trial's progress without polling `status.phase`.
 //!
@@ -18,8 +18,8 @@
 //! [`crate::interp::EnsaioEnvironment::publish_phase_event`] — the same
 //! seam every other Ensaio side effect (provision/wire/assert/teardown)
 //! goes through, so this stays mockable per the crate's TYPED-SPEC +
-//! INTERPRETER TRIPLET discipline ("the seam is the whole game",
-//! `theory/TESTING-SUBSTRATE.md` §IX). `MockEnv` (`src/mock.rs`) records
+//! INTERPRETER TRIPLET discipline ("the seam is the whole game").
+//! `MockEnv` (`src/mock.rs`) records
 //! every call for tests; `K8sEnvironment` (`src/k8s_env.rs`) is an honest,
 //! clearly-marked stub today — wiring a real NATS client is the named
 //! follow-up, not built in this pass.

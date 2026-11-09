@@ -102,7 +102,7 @@ pub struct CertificationInput {
 ///
 /// # The derived-verdict law at the run level
 ///
-/// `theory/UNREPRESENTABILITY.md` §II.4 applies here exactly as it does to
+/// The derived-verdict law applies here exactly as it does to
 /// a single [`Verdict`]: this receipt's `verdict` is **derived** from the
 /// records it carries ([`classify`], the sole classifier, used by both
 /// [`CertificationReceipt::build`] and the deserialization border) and it
