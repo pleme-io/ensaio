@@ -841,7 +841,7 @@ pub enum Domain<T> {
 //
 // # What emptiness MEANS for ensaio
 //
-// §II.4's clause 2 deliberately does **not** say "empty fails" — it says
+// Clause 2 of the verdict law deliberately does **not** say "empty fails" — it says
 // emptiness must be *sayable*, so its meaning is decided once, visibly,
 // per domain. ensaio's product is a verdict about an architecture, and it
 // already reserves a name for *neither proven nor disproven*. So:
@@ -896,7 +896,7 @@ pub enum Domain<T> {
 // | a pass without a non-empty witness, outside this crate | **truly-unrepresentable** — `#[non_exhaustive]` + no empty `Observations` inhabitant |
 // | a pass without a non-empty witness, *inside* this crate | **only-mitigated** — `#[non_exhaustive]` is a crate boundary; every in-crate site is routed through `judge`, by convention |
 // | a forged verdict arriving over the wire | **parse-time-rejected** — `#[serde(try_from)]` re-derives and returns `Err` |
-// | the subject set is the *right* set | **only-mitigated** — non-emptiness is silent about scope (§II.3's E ceiling) |
+// | the subject set is the *right* set | **only-mitigated** — non-emptiness is silent about scope (the subclass-E ceiling) |
 //
 // # Why the wire shape is externally tagged
 //
@@ -956,7 +956,7 @@ pub enum Verdict {
     /// when the environment couldn't answer the question.
     Skipped { reason: String },
     /// The assertion ran and **nothing was in scope**. Not a pass, not a
-    /// falsification — the distinct arm §II.4's clause 2 requires, and the
+    /// falsification — the distinct arm that clause 2 of the verdict law requires, and the
     /// answer to "the assertion held over forty subjects" and "the
     /// assertion held over zero" having been the same value.
     Vacuous {},
@@ -994,7 +994,7 @@ impl Verdict {
     #[must_use]
     pub fn judge(domain: Domain<Observation>, findings: Vec<Observation>) -> Self {
         // Every arm is named. There is deliberately no `_` here: a
-        // wildcard is the mechanism §II.3's subclass D describes for
+        // wildcard is the mechanism subclass D describes for
         // rounding a new case up into an existing one, and a classifier is
         // the last place to leave that door open.
         match (domain, Observations::scope(findings)) {
@@ -1055,7 +1055,7 @@ impl Verdict {
     /// The verdict's stable class tag — the content-address component, and
     /// the wire tag. Exhaustive over the closed arm set with **no `_` arm**,
     /// so a future seventh variant is a compile error here rather than
-    /// being silently rounded into a neighbour (§II.3's subclass D).
+    /// being silently rounded into a neighbour (subclass D).
     #[must_use]
     pub fn tag(&self) -> &'static str {
         match self {
@@ -1073,7 +1073,7 @@ impl Verdict {
 
 /// The deserialization shape.
 ///
-/// Because the wire is externally tagged, the current and the pre-§II.4
+/// Because the wire is externally tagged, the current and the older
 /// forms share an outer tag and differ only in *fields*: `subjects` /
 /// `findings` (current) versus a single `evidence` string (legacy). So one
 /// wire enum accepts both, and `evidence.is_some()` selects the migration
@@ -1097,7 +1097,7 @@ enum VerdictWire {
         subjects: Vec<Observation>,
         #[serde(default)]
         findings: Vec<Observation>,
-        /// Pre-§II.4 only. Present ⇒ this is a legacy record.
+        /// Legacy records only. Present ⇒ this is a legacy record.
         #[serde(default)]
         evidence: Option<String>,
     },
@@ -1287,7 +1287,7 @@ impl EnsaioOutcome {
     /// The leading `!self.results.is_empty()` is the whole point and is
     /// load-bearing: `[].iter().all(_)` is `true`, so without it a run that
     /// asserted nothing would report that everything held. That is
-    /// §II.3's subclass A — the same shape as `sui`'s
+    /// Subclass A — the same shape as `sui`'s
     /// `ShadowReport::all_pass` returning `true` over an empty `records`.
     /// Pinned by `tests/derived_verdict_law.rs`.
     ///
@@ -1299,7 +1299,7 @@ impl EnsaioOutcome {
     }
 
     /// How many assertions this outcome is about — the subject-set witness
-    /// at the run level. §II.3's subclass-E discipline: *a gate that cannot
+    /// at the run level. The subclass-E discipline: *a gate that cannot
     /// state what it examined cannot be audited for what it missed.*
     #[must_use]
     pub fn subject_count(&self) -> usize {

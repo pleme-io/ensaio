@@ -1,7 +1,7 @@
 //! [`LifecycleStage`] — the universal skeleton every domain phase FSM projects
 //! into. THIS is the shared mechanism (not a unified phase enum).
 //!
-//! Grounded in the design's §1.1 stage table: viveiro's `Warming/Ready/
+//! Grounded in one stage table: viveiro's `Warming/Ready/
 //! Claimed/Draining/Reaped`, ensaio's 11-variant FSM, kenshi's per-run arc,
 //! and the tenant's `InfraProvisioning/…/Reaped` all collapse onto the same
 //! seven stages — while each keeps its own rich enum. `Keeping` is where every

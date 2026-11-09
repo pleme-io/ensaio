@@ -601,7 +601,7 @@ spec:
                             The honest [`Default`], so a verdict field that was never assigned reads as "no claim" rather than as a pass.
                           type: object
                         Vacuous:
-                          description: The assertion ran and **nothing was in scope**. Not a pass, not a falsification — the distinct arm §II.4's clause 2 requires, and the answer to "the assertion held over forty subjects" and "the assertion held over zero" having been the same value.
+                          description: The assertion ran and **nothing was in scope**. Not a pass, not a falsification — the distinct arm that clause 2 of the verdict law requires, and the answer to "the assertion held over forty subjects" and "the assertion held over zero" having been the same value.
                           type: object
                       type: object
                   required:

@@ -206,7 +206,7 @@ fn an_honest_verdict_round_trips_through_the_wire() {
 /// `ensaio.pleme.io/v1alpha1 Ensaio eks-breathability-trial -n trials`
 /// (`resourceVersion` 42802, `phase: Done`).
 ///
-/// It carries the pre-§II.4 externally-tagged shape. It is committed here as
+/// It carries the older externally-tagged shape. It is committed here as
 /// a fixture because a `kube::runtime::Controller` watch decodes **every**
 /// object in its stream: a parse border that rejected this record would not
 /// merely refuse a forgery, it would wedge the trials controller on a CR
@@ -319,7 +319,7 @@ fn certification_over_zero_artifact_assertions_is_inconclusive() {
 }
 
 /// A certification over a non-empty artifact set that all held is
-/// `Certified`, and the receipt publishes its subject count — §II.3's
+/// `Certified`, and the receipt publishes its subject count — the
 /// subclass-E discipline: *a gate that cannot state what it examined cannot
 /// be audited for what it missed.*
 #[test]

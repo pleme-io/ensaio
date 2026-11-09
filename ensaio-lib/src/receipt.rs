@@ -228,7 +228,7 @@ impl CertificationReceipt {
     /// **The subject-set witness at the run level**: how many artifact
     /// assertions this certification is *about*.
     ///
-    /// §II.3's subclass-E discipline — *a gate that cannot state what it
+    /// The subclass-E discipline — *a gate that cannot state what it
     /// examined cannot be audited for what it missed.* A `Certified`
     /// receipt reporting `subject_count() == 0` is not constructible
     /// ([`classify`] routes an empty artifact set to `Inconclusive`), so
